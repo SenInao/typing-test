@@ -47,11 +47,6 @@ class TypingTest {
 
 window.addEventListener("load",()=> {
   const test = new TypingTest("Hei mitt navn er sen og jeg liker boller!")
-  
-  function keydown(e) {
-    test.keydown(e)
-  }
-
-  window.addEventListener("keydown", keydown)
+  window.addEventListener("keydown", e=>{test.keydown(e)})
 })
 
