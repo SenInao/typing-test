@@ -1,0 +1,27 @@
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#test-container {
+  margin: 3rem;
+}
+
+.test-char {
+  font-size: 35px;
+  color: gray;
+  padding: 2px;
+  margin: 1px;
+  border-radius: 5px;
+}
+
+.green {
+  color: green;
+  background-color: lightgreen;
+}
+
+.red {
+  color: red;
+  background-color: pink;
+}
