@@ -4,28 +4,60 @@ body {
   align-items: center;
 }
 
+#information {
+  margin: 2rem;
+  width: 50%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.infoLabel {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: gray;
+}
+
 #test-container {
+  overflow-y: hidden;
+  height: 139px;
   width: 50%;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
-  margin: 3rem;
+  scroll-behavior: smooth;
 }
 
 .test-char {
+  width: 30px;
+  height: 40px;
   text-align: center;
   font-size: 35px;
   color: gray;
   margin: 2px;
   background-color: lightgray;
+  border-bottom: 3px solid lightgray;
   border-radius: 2px;
+}
+
+.underline {
+  border-bottom: 3px solid blue;
 }
 
 .green {
   color: green;
   background-color: lightgreen;
+  border-bottom: 3px solid lightgreen;
+}
+
+.yellow {
+  color: orangered;
+  background-color: lightsalmon;
+  border-bottom: 3px solid lightsalmon;
 }
 
 .red {
   color: red;
   background-color: pink;
+  border-bottom: 3px solid pink;
 }
