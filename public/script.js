@@ -64,7 +64,7 @@ class TypingTest {
     this.accuracy = 0
     this.accuracyEl = document.getElementById("accuracy")
 
-    this.charsInWidth = Math.floor(document.getElementById("test-container").offsetWidth/34)
+    this.charsInWidth = Math.round(document.getElementById("test-container").offsetWidth/35)
     console.log(this.charsInWidth)
   }
 
@@ -145,6 +145,7 @@ class TypingTest {
         break
     }
 
+    console.log(this.cursor, this.charsInWidth, this.line)
     if (this.charsInWidth*(2+this.line) === this.cursor) {
       const el = document.getElementById("test-container")
       el.scrollBy(0, 47)
@@ -157,7 +158,14 @@ class TypingTest {
 }
 
 window.addEventListener("load",()=> {
-  const test = new TypingTest("Hei mitt navn er sen og jeg liker boller!Hei mitt navn er sen og jeg liker boller!Hei mitt navn er sen og jeg liker boller!Hei mitt navn er sen og jeg liker boller!")
-  window.addEventListener("keydown", e=>{test.keydown(e)})
+  let string = "Filler string"
+  fetch("/api/test-words")
+    .then(response => response.json())
+    .then(data => {
+      string = data.string
+    }).finally(()=>{
+      const test = new TypingTest(string)
+      window.addEventListener("keydown", e=>{test.keydown(e)})
+    })
 })
 

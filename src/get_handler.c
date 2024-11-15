@@ -3,9 +3,50 @@
 #include "../include/request_handler.h"
 #include "../include/get_content.h"
 #include "../include/server_err.h"
+#include <stdio.h>
 
 char* test_wordsCtrl() {
-  char* content = "Hei, mitt navn er sen og jeg elsker boller!";
+  char* fcontent = 0;
+  long length;
+
+  FILE *fp = fopen("sentences.txt", "r");
+
+  if (fp == NULL) {
+    return NULL;
+  }
+
+  fseek(fp, 0, SEEK_END);
+  length = ftell(fp);
+  fseek(fp, 0, SEEK_SET);
+  fcontent = malloc(length);
+  if (fcontent) {
+    fread(fcontent, 1, length, fp);
+  }
+  fclose(fp);
+
+  int sentenceIndex = rand() % 19 + 1;
+  char* sentence = 0;
+
+  int i;
+  int newLineCount = 0;
+  int sentenceStart = 0;
+  for (i = 0; i < length; i++) {
+    if (fcontent[i] == '\n') {
+      newLineCount++;
+      if (newLineCount == sentenceIndex) {
+        int sentenceLen = i - sentenceStart;
+        sentence = calloc(sentenceLen+1, sizeof(char));
+        strncpy(sentence, &fcontent[sentenceStart], sentenceLen);
+        break;
+      }
+      if (newLineCount == sentenceIndex-1) {
+        sentenceStart = i+1;
+      }
+    }
+  }
+
+  char* content = malloc(strlen(sentence)+18);
+  snprintf(content, strlen(sentence) + 18, "{ \"string\" : \"%s\" }", sentence);
   return content;
 }
 
@@ -20,6 +61,7 @@ Response handle_get(Request request) {
 
   if (strcmp(request.path, "/api/test-words") == 0) {
     body = test_wordsCtrl();
+    add_header(&headers, &header_count, "content-type", "application/json");
     succsess = 1;
   } else {
     body = get_content(request.path);
