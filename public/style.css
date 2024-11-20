@@ -61,3 +61,14 @@ body {
   background-color: pink;
   border-bottom: 3px solid pink;
 }
+
+#reload {
+  width: 50px;
+  height: auto;
+  margin: 50px;
+  transition: transform 0.1s ease-in-out;
+}
+
+#reload:hover {
+  transform: scale(1.5);
+}

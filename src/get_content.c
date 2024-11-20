@@ -18,6 +18,7 @@ char* get_content(char* path) {
   FILE *fp = fopen(default_path, "r");
 
   if (fp == NULL) {
+    free(default_path);
     return NULL;
   }
 
@@ -29,6 +30,7 @@ char* get_content(char* path) {
     fread(content, 1, length, fp);
   }
   fclose(fp);
+  free(default_path);
 
   return content;
 }

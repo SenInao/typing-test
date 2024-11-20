@@ -49,26 +49,49 @@ class TypingTest {
   constructor(string) {
     this.string = string
     this.elements = this.createElements()
+    this.onkeydown = this.keydown
     this.cursor = 0
     this.false = 0
     this.totalFalse = 0
     this.line = 0
 
-    this.time = 0
-    this.timerId = null
     this.timerEl = document.getElementById("timer")
-
-    this.wpm = 0
     this.wpmEl = document.getElementById("wpm")
-
-    this.accuracy = 0
     this.accuracyEl = document.getElementById("accuracy")
+    this.testContainer = document.getElementById("test-container")
 
-    this.charsInWidth = Math.round(document.getElementById("test-container").offsetWidth/35)
-    console.log(this.charsInWidth)
+    this.timerId = null
+
+    this.time = 0
+    this.wpm = 0
+    this.accuracy = 0
+
+    this.charsInWidth = Math.round(this.testContainer.offsetWidth/35) - 1
+  }
+
+  reset(string) {
+    this.testContainer.innerHTML = ""
+    if (this.timerId) {
+      this.stopTimer()
+    }
+    this.timerId = null
+    this.string = string
+    this.onkeydown = this.keydown
+    this.cursor = 0
+    this.false = 0
+    this.totalFalse = 0
+    this.line = 0
+    this.time = 0
+    this.wpm = 0
+    this.accuracy = 0
+    this.charsInWidth = Math.round(this.testContainer.offsetWidth/35) - 1
+    this.elements = this.createElements()
   }
 
   updateWpm() {
+    if (this.time === 0) {
+      return
+    }
     this.wpm = (((this.cursor+1-this.false)/5)/(this.time/60))
     this.wpmEl.innerHTML = "WPM: "+Math.round(this.wpm)
   }
@@ -121,13 +144,15 @@ class TypingTest {
     return elements
   }
 
+  finish() {
+    this.stopTimer()
+    this.onkeydown = () => {}
+  }
+
   keydown(e) {
-    if (!this.timerId) {
-      this.startTimer()
-    }
     switch (e.key) {
       case "Shift":
-        break
+        return
       case "Backspace":
         if (this.cursor > 0) {
           this.elements[this.cursor].removeUnderline()
@@ -137,6 +162,17 @@ class TypingTest {
         break
       default:
         if (e.repeat) break
+
+        if (!this.timerId) {
+          this.startTimer()
+        }
+
+        if (this.string.length-1 === this.cursor) {
+          this.elements[this.cursor].type(e.key)
+          this.finish()
+          return
+        }
+
         if (this.cursor < this.elements.length) {
           this.elements[this.cursor].type(e.key)
           this.cursor++
@@ -157,15 +193,22 @@ class TypingTest {
   }
 }
 
-window.addEventListener("load",()=> {
+async function getString() {
+  const res = await fetch("/api/test-words")
+  const data = await res.json()
+  return data.string
+}
+
+window.addEventListener("load",async ()=> {
   let string = "Filler string"
-  fetch("/api/test-words")
-    .then(response => response.json())
-    .then(data => {
-      string = data.string
-    }).finally(()=>{
-      const test = new TypingTest(string)
-      window.addEventListener("keydown", e=>{test.keydown(e)})
-    })
+  string = await getString()
+  const test = new TypingTest(string)
+  window.addEventListener("keydown", e=>{test.onkeydown(e)})
+  const reloadBtn = document.getElementById("reload")
+
+  reloadBtn.addEventListener("click", async () => {
+    string = await getString()
+    test.reset(string)
+  })
 })
 
